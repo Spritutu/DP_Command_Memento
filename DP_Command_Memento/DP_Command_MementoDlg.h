@@ -1,15 +1,13 @@
-
+#include "MyClass.h"
 // DP_Command_MementoDlg.h : header file
 //
 
 #pragma once
 
-class Command;
-class Player;
-class Caretaker;
+
 
 // CDP_Command_MementoDlg dialog
-class CDP_Command_MementoDlg : public CDialogEx
+class CDP_Command_MementoDlg : public CDialogEx, public Observer
 {
 // Construction
 public:
@@ -32,6 +30,9 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
+	afx_msg void OnBnClickedButton4();
 	DECLARE_MESSAGE_MAP()
 
 
@@ -46,7 +47,6 @@ private:
 	Command* pBtn3Command;
 	Command* pBtn4Command;
 public:
-	afx_msg void OnBnClickedButton2();
-	afx_msg void OnBnClickedButton3();
-	afx_msg void OnBnClickedButton4();
+	virtual void Update(UINT uMsg, LPVOID pParam = NULL);
+
 };

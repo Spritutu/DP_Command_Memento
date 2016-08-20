@@ -42,6 +42,35 @@ void Player::LoadFromMemento(Memento* pMemento)
 	this->exp = pMemento->exp;
 }
 
+void Player::RegisterObserver(Observer* pObserver)
+{
+	if (pObserver)
+		this->listObservers.AddTail(pObserver);
+}
+
+void Player::RemoveObserver(Observer* pObserver)
+{
+	if (pObserver != NULL)
+	{
+		POSITION pos = this->listObservers.Find(pObserver);
+		if(pos)
+		{
+			this->listObservers.RemoveAt(pos);
+		}
+	}
+}
+
+void Player::NotifyObservers(UINT uMsg, LPVOID pParam)
+{
+	POSITION pos = this->listObservers.GetHeadPosition();
+	Observer* pObserver = NULL;
+	while(pos)
+	{
+		pObserver = this->listObservers.GetNext(pos);
+		pObserver->Update(uMsg, pParam);
+	}
+}
+
 
 
 

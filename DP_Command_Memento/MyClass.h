@@ -1,5 +1,13 @@
 #pragma once
 
+enum 
+{
+	INNER_MSG_BATTLE = 0,
+	INNER_MSG_SAVE,
+	INNER_MSG_LOAD,
+	INNER_MSG_UNDO
+};
+
 class Memento
 {
 	friend class Player;
@@ -21,7 +29,21 @@ private:
 	Memento* pMementoPlayer;
 };
 
-class Player
+class Observer
+{
+public:
+	virtual void Update(UINT uMsg, LPVOID pParam = NULL) = 0;
+};
+
+class Subject
+{
+public:
+	virtual void RegisterObserver(Observer *pObserver) = 0;
+	virtual void RemoveObserver(Observer *pObserver) = 0;
+	virtual void NotifyObservers(UINT uMsg, LPVOID pParam = NULL) = 0;
+};
+
+class Player : public Subject
 {
 public:
 	Player();
@@ -31,9 +53,13 @@ public:
 	int GetEXP();
 	Memento* SaveToMemento();
 	void LoadFromMemento(Memento* pMemento);
+	virtual void RegisterObserver(Observer* pObserver);
+	virtual void RemoveObserver(Observer* pObserver);
+	virtual void NotifyObservers(UINT uMsg, LPVOID pParam = NULL);
 private:
 	int hp;
 	int exp;
+	CList<Observer*, Observer*> listObservers;
 };
 
 class Command
@@ -79,3 +105,5 @@ public:
 private:
 	Player* pPlayer;
 };
+
+
