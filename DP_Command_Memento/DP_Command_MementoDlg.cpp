@@ -119,8 +119,8 @@ BOOL CDP_Command_MementoDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-
 	this->pPlayer = new Player();
+	this->pPlayer->RegisterObserver(this);
 	this->pCaretaker = new Caretaker();
 	this->pBtn1Command = new BattleCommand(this->pPlayer);
 	this->pBtn2Command = new SaveCommand(this->pPlayer, this->pCaretaker);
@@ -197,23 +197,33 @@ void CDP_Command_MementoDlg::UpdateUI()
 void CDP_Command_MementoDlg::OnBnClickedButton1()
 {
 	this->pBtn1Command->execute();
-	UpdateUI();
+	pPlayer->NotifyObservers(INNER_MSG_BATTLE);
 }
 
 void CDP_Command_MementoDlg::OnBnClickedButton2()
 {
 	this->pBtn2Command->execute();
-	UpdateUI();
+	pPlayer->NotifyObservers(INNER_MSG_SAVE);
 }
 
 void CDP_Command_MementoDlg::OnBnClickedButton3()
 {
 	this->pBtn3Command->execute();
-	UpdateUI();
+	pPlayer->NotifyObservers(INNER_MSG_LOAD);
 }
 
 void CDP_Command_MementoDlg::OnBnClickedButton4()
 {
 	this->pBtn4Command->execute();
+	pPlayer->NotifyObservers(INNER_MSG_UNDO);
+}
+
+void CDP_Command_MementoDlg::Update(UINT uMsg, LPVOID pParam /*= NULL*/)
+{
+	//switch (uMsg)
+	//{
+	//default:
+	//	break;
+	//}
 	UpdateUI();
 }
