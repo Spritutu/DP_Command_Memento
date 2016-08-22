@@ -83,6 +83,7 @@ BattleCommand::BattleCommand(Player* pPlayer) :
 void BattleCommand::execute()
 {
 	this->pPlayer->Battle();
+	this->pPlayer->NotifyObservers(INNER_MSG_BATTLE);
 }
 
 SaveCommand::SaveCommand(Player* pPlayer, Caretaker* pCaretaker) :
@@ -95,6 +96,7 @@ SaveCommand::SaveCommand(Player* pPlayer, Caretaker* pCaretaker) :
 void SaveCommand::execute()
 {
 	this->pCaretaker->SetMemento(this->pPlayer->SaveToMemento());
+	this->pPlayer->NotifyObservers(INNER_MSG_SAVE);
 }
 
 LoadCommand::LoadCommand(Player* pPlayer, Caretaker* pCaretaker) :
@@ -107,6 +109,7 @@ LoadCommand::LoadCommand(Player* pPlayer, Caretaker* pCaretaker) :
 void LoadCommand::execute()
 {
 	this->pPlayer->LoadFromMemento(pCaretaker->GetMemento());
+	this->pPlayer->NotifyObservers(INNER_MSG_LOAD);
 }
 
 UndoCommand::UndoCommand(Player* pPlayer) :
@@ -118,6 +121,7 @@ UndoCommand::UndoCommand(Player* pPlayer) :
 void UndoCommand::execute()
 {
 	pPlayer->ReverseBattle();
+	this->pPlayer->NotifyObservers(INNER_MSG_UNDO);
 }
 
 Memento::Memento(const int& hp, const int& exp) :
