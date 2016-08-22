@@ -63,8 +63,8 @@ CDP_Command_MementoDlg::~CDP_Command_MementoDlg()
 		delete this->pBtn2Command;
 	if (this->pBtn3Command)
 		delete this->pBtn3Command;
-	if (this->pBtn4Command)
-		delete this->pBtn4Command;
+	if (this->pBtn5Command)
+		delete this->pBtn5Command;
 	if (this->pPlayer)
 		delete this->pPlayer;
 	if (this->pCaretaker)
@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CDP_Command_MementoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, &CDP_Command_MementoDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CDP_Command_MementoDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON4, &CDP_Command_MementoDlg::OnBnClickedButton4)
+	ON_BN_CLICKED(IDC_BUTTON5, &CDP_Command_MementoDlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -125,7 +126,7 @@ BOOL CDP_Command_MementoDlg::OnInitDialog()
 	this->pBtn1Command = new BattleCommand(this->pPlayer);
 	this->pBtn2Command = new SaveCommand(this->pPlayer, this->pCaretaker);
 	this->pBtn3Command = new LoadCommand(this->pPlayer, this->pCaretaker);
-	this->pBtn4Command = new UndoCommand(this->pPlayer);
+	this->pBtn5Command = new RestCommand(this->pPlayer);
 	UpdateUI();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -214,8 +215,12 @@ void CDP_Command_MementoDlg::OnBnClickedButton3()
 
 void CDP_Command_MementoDlg::OnBnClickedButton4()
 {
-	this->pBtn4Command->execute();
-	//pPlayer->NotifyObservers(INNER_MSG_UNDO);
+
+}
+
+void CDP_Command_MementoDlg::OnBnClickedButton5()
+{
+	this->pBtn5Command->execute();
 }
 
 void CDP_Command_MementoDlg::Update(UINT uMsg, LPVOID pParam /*= NULL*/)

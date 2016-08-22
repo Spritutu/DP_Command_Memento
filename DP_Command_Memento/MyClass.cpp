@@ -71,6 +71,16 @@ void Player::NotifyObservers(UINT uMsg, LPVOID pParam)
 	}
 }
 
+void Player::Rest()
+{
+	this->hp += 10;
+}
+
+void Player::ReverseRest()
+{
+	this->hp -= 10;
+}
+
 
 
 
@@ -86,6 +96,12 @@ void BattleCommand::execute()
 	this->pPlayer->NotifyObservers(INNER_MSG_BATTLE);
 }
 
+void BattleCommand::unexecute()
+{
+	this->pPlayer->ReverseBattle();
+	this->pPlayer->NotifyObservers(INNER_MSG_UNDO);
+}
+
 SaveCommand::SaveCommand(Player* pPlayer, Caretaker* pCaretaker) :
 	pPlayer(pPlayer),
 	pCaretaker(pCaretaker)
@@ -97,6 +113,11 @@ void SaveCommand::execute()
 {
 	this->pCaretaker->SetMemento(this->pPlayer->SaveToMemento());
 	this->pPlayer->NotifyObservers(INNER_MSG_SAVE);
+}
+
+void SaveCommand::unexecute()
+{
+	//do nothing
 }
 
 LoadCommand::LoadCommand(Player* pPlayer, Caretaker* pCaretaker) :
@@ -112,16 +133,9 @@ void LoadCommand::execute()
 	this->pPlayer->NotifyObservers(INNER_MSG_LOAD);
 }
 
-UndoCommand::UndoCommand(Player* pPlayer) :
-	pPlayer(pPlayer)
+void LoadCommand::unexecute()
 {
-
-}
-
-void UndoCommand::execute()
-{
-	pPlayer->ReverseBattle();
-	this->pPlayer->NotifyObservers(INNER_MSG_UNDO);
+	//do nothing
 }
 
 Memento::Memento(const int& hp, const int& exp) :
@@ -154,4 +168,22 @@ void Caretaker::SetMemento(Memento* pMemento)
 Memento* Caretaker::GetMemento()
 {
 	return this->pMementoPlayer;
+}
+
+RestCommand::RestCommand(Player* pPlayer) :
+	pPlayer(pPlayer)
+{
+
+}
+
+void RestCommand::execute()
+{
+	this->pPlayer->Rest();
+	this->pPlayer->NotifyObservers(INNER_MSG_REST);
+}
+
+void RestCommand::unexecute()
+{
+	this->pPlayer->ReverseRest();
+	this->pPlayer->NotifyObservers(INNER_MSG_UNDO);
 }
