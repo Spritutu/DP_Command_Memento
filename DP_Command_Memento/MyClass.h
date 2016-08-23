@@ -1,4 +1,5 @@
 #pragma once
+#include <stack>
 
 enum 
 {
@@ -7,6 +8,13 @@ enum
 	INNER_MSG_LOAD,
 	INNER_MSG_UNDO,
 	INNER_MSG_REST
+};
+
+class Command
+{
+public:
+	virtual void execute() = 0;
+	virtual void unexecute() = 0;
 };
 
 class Memento
@@ -26,8 +34,12 @@ public:
 	~Caretaker();
 	Memento* GetMemento();
 	void SetMemento(Memento* pMemento);
+	Command* GetCommandFromStack();
+	void SetCommandToStack(Command* pCommand);
+	BOOL IsStackEmpty();
 private:
 	Memento* pMementoPlayer;
+	std::stack<Command*> stackUndo;
 };
 
 class Observer
@@ -65,21 +77,15 @@ private:
 	CList<Observer*, Observer*> listObservers;
 };
 
-class Command
-{
-public:
-	virtual void execute() = 0;
-	virtual void unexecute() = 0;
-};
-
 class BattleCommand : public Command
 {
 public:
-	BattleCommand(Player* pPlayer);
+	BattleCommand(Player* pPlayer, Caretaker* pCaretaker);
 	virtual void execute();
 	virtual void unexecute();
 private:
 	Player* pPlayer;
+	Caretaker* pCaretaker;
 };
 
 class SaveCommand : public Command
@@ -107,9 +113,21 @@ private:
 class RestCommand : public Command
 {
 public:
-	RestCommand(Player* pPlayer);
+	RestCommand(Player* pPlayer, Caretaker* pCaretaker);
 	virtual void execute();
 	virtual void unexecute();
 private:
 	Player* pPlayer;
+	Caretaker* pCaretaker;
 };
+
+class UndoCommand : public Command
+{
+public:
+	UndoCommand(Caretaker* pCaretaker);
+	virtual void execute();
+	virtual void unexecute();
+private:
+	Caretaker* pCaretaker;
+};
+

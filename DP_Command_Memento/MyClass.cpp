@@ -84,8 +84,9 @@ void Player::ReverseRest()
 
 
 
-BattleCommand::BattleCommand(Player* pPlayer) :
-	pPlayer(pPlayer)
+BattleCommand::BattleCommand(Player* pPlayer, Caretaker* pCaretaker) :
+	pPlayer(pPlayer),
+	pCaretaker(pCaretaker)
 {
 
 }
@@ -93,6 +94,7 @@ BattleCommand::BattleCommand(Player* pPlayer) :
 void BattleCommand::execute()
 {
 	this->pPlayer->Battle();
+	this->pCaretaker->SetCommandToStack(this);
 	this->pPlayer->NotifyObservers(INNER_MSG_BATTLE);
 }
 
@@ -170,8 +172,30 @@ Memento* Caretaker::GetMemento()
 	return this->pMementoPlayer;
 }
 
-RestCommand::RestCommand(Player* pPlayer) :
-	pPlayer(pPlayer)
+Command* Caretaker::GetCommandFromStack()
+{
+	Command* ret = NULL;
+	if (!this->stackUndo.empty())
+	{
+		ret = this->stackUndo.top();
+		this->stackUndo.pop();
+	}
+	return ret;
+}
+
+void Caretaker::SetCommandToStack(Command* pCommand)
+{
+	this->stackUndo.push(pCommand);
+}
+
+BOOL Caretaker::IsStackEmpty()
+{
+	return this->stackUndo.empty();
+}
+
+RestCommand::RestCommand(Player* pPlayer, Caretaker* pCaretaker) :
+	pPlayer(pPlayer),
+	pCaretaker(pCaretaker)
 {
 
 }
@@ -179,6 +203,7 @@ RestCommand::RestCommand(Player* pPlayer) :
 void RestCommand::execute()
 {
 	this->pPlayer->Rest();
+	this->pCaretaker->SetCommandToStack(this);
 	this->pPlayer->NotifyObservers(INNER_MSG_REST);
 }
 
@@ -186,4 +211,22 @@ void RestCommand::unexecute()
 {
 	this->pPlayer->ReverseRest();
 	this->pPlayer->NotifyObservers(INNER_MSG_UNDO);
+}
+
+UndoCommand::UndoCommand(Caretaker* pCaretaker):
+	pCaretaker(pCaretaker)
+{
+
+}
+
+void UndoCommand::execute()
+{
+	Command* commandUndo = this->pCaretaker->GetCommandFromStack();
+	if (commandUndo)
+		commandUndo->unexecute();
+}
+
+void UndoCommand::unexecute()
+{
+	//do nothing
 }

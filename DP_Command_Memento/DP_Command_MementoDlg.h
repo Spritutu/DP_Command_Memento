@@ -45,6 +45,7 @@ private:
 	Command* pBtn1Command;
 	Command* pBtn2Command;
 	Command* pBtn3Command;
+	Command* pBtn4Command;
 	Command* pBtn5Command;
 public:
 	virtual void Update(UINT uMsg, LPVOID pParam = NULL);

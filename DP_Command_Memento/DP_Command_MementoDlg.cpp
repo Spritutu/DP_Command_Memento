@@ -63,6 +63,8 @@ CDP_Command_MementoDlg::~CDP_Command_MementoDlg()
 		delete this->pBtn2Command;
 	if (this->pBtn3Command)
 		delete this->pBtn3Command;
+	if (this->pBtn4Command)
+		delete this->pBtn4Command;
 	if (this->pBtn5Command)
 		delete this->pBtn5Command;
 	if (this->pPlayer)
@@ -123,10 +125,11 @@ BOOL CDP_Command_MementoDlg::OnInitDialog()
 	this->pPlayer = new Player();
 	this->pPlayer->RegisterObserver(this);
 	this->pCaretaker = new Caretaker();
-	this->pBtn1Command = new BattleCommand(this->pPlayer);
+	this->pBtn1Command = new BattleCommand(this->pPlayer, this->pCaretaker);
 	this->pBtn2Command = new SaveCommand(this->pPlayer, this->pCaretaker);
 	this->pBtn3Command = new LoadCommand(this->pPlayer, this->pCaretaker);
-	this->pBtn5Command = new RestCommand(this->pPlayer);
+	this->pBtn4Command = new UndoCommand(this->pCaretaker);
+	this->pBtn5Command = new RestCommand(this->pPlayer, this->pCaretaker);
 	UpdateUI();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -187,12 +190,22 @@ HCURSOR CDP_Command_MementoDlg::OnQueryDragIcon()
 void CDP_Command_MementoDlg::UpdateUI()
 {
 	CString csHP;
-	csHP.Format(_T("%d"), pPlayer->GetHP());
+	csHP.Format(_T("%d"), this->pPlayer->GetHP());
 	((CStatic*)GetDlgItem(IDC_STATIC_HP))->SetWindowText(csHP);
 	
 	CString csEXP;
-	csEXP.Format(_T("%d"), pPlayer->GetEXP());
+	csEXP.Format(_T("%d"), this->pPlayer->GetEXP());
 	((CStatic*)GetDlgItem(IDC_STATIC_EXP))->SetWindowText(csEXP);
+
+	if (this->pCaretaker->IsStackEmpty())
+		((CButton*)GetDlgItem(IDC_BUTTON4))->EnableWindow(FALSE);
+	else
+		((CButton*)GetDlgItem(IDC_BUTTON4))->EnableWindow(TRUE);
+
+	if (!this->pCaretaker->GetMemento())
+		((CButton*)GetDlgItem(IDC_BUTTON3))->EnableWindow(FALSE);
+	else
+		((CButton*)GetDlgItem(IDC_BUTTON3))->EnableWindow(TRUE);
 }
 
 void CDP_Command_MementoDlg::OnBnClickedButton1()
@@ -215,7 +228,7 @@ void CDP_Command_MementoDlg::OnBnClickedButton3()
 
 void CDP_Command_MementoDlg::OnBnClickedButton4()
 {
-
+	this->pBtn4Command->execute();
 }
 
 void CDP_Command_MementoDlg::OnBnClickedButton5()
